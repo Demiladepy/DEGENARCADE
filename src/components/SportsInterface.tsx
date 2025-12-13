@@ -8,10 +8,14 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
     const [matches, setMatches] = useState<MatchData[]>([]);
     const [selections, setSelections] = useState<BetSelection[]>([]);
     const [loading, setLoading] = useState(true);
+    const [activeSport, setActiveSport] = useState('Soccer');
 
     useEffect(() => {
+        setLoading(true);
+        setMatches([]); // Clear previous
+
         const fetchMatches = async () => {
-            const data = await SportsDataService.getMatches();
+            const data = await SportsDataService.getMatches(activeSport);
             setMatches(data);
             setLoading(false);
         };
@@ -19,7 +23,7 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
         fetchMatches();
         const interval = setInterval(fetchMatches, 5000); // Live updates
         return () => clearInterval(interval);
-    }, []);
+    }, [activeSport]);
 
     const toggleSelection = (match: MatchData, selectionName: string, marketName: string, price: number) => {
         const id = `${match.id}-${selectionName}`;
@@ -103,9 +107,18 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
                         <Badge color="green" variant="soft">LIVE FEED ACTIVE</Badge>
                     </Flex>
                     <Flex gap="2">
-                        <Button size="1" variant="soft" color="gray">Soccer</Button>
-                        <Button size="1" variant="outline" color="gray">Basketball</Button>
-                        <Button size="1" variant="outline" color="gray">Tennis</Button>
+                        {['Soccer', 'Basketball', 'Tennis'].map(sport => (
+                            <Button
+                                key={sport}
+                                size="1"
+                                variant={activeSport === sport ? "solid" : "outline"}
+                                color={activeSport === sport ? "cyan" : "gray"}
+                                onClick={() => setActiveSport(sport)}
+                                style={{ cursor: 'pointer', opacity: activeSport === sport ? 1 : 0.6 }}
+                            >
+                                {sport}
+                            </Button>
+                        ))}
                     </Flex>
                 </Flex>
 
@@ -113,9 +126,15 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
                 <Flex style={{ background: '#111113', padding: '8px 24px', borderBottom: '1px solid #ffffff10' }}>
                     <Box style={{ width: 60 }}><Text size="1" color="gray">TIME</Text></Box>
                     <Box style={{ flex: 2 }}><Text size="1" color="gray">MATCH</Text></Box>
-                    <Flex style={{ flex: 2, gap: 4 }} justify="center"><Text size="1" color="gray">1x2 (WINNER)</Text></Flex>
-                    <Flex style={{ flex: 1.5, gap: 4 }} justify="center"><Text size="1" color="gray">OVER / UNDER</Text></Flex>
-                    <Flex style={{ flex: 1.5, gap: 4 }} justify="center"><Text size="1" color="gray">BTTS</Text></Flex>
+                    <Flex style={{ flex: 2, gap: 4 }} justify="center"><Text size="1" color="gray">WINNER</Text></Flex>
+
+                    {/* OPTIONAL COLUMNS FOR SOCCER */}
+                    <Flex style={{ flex: 1.5, gap: 4 }} justify="center">
+                        <Text size="1" color="gray">{activeSport === 'Soccer' ? 'OVER / UNDER' : ''}</Text>
+                    </Flex>
+                    <Flex style={{ flex: 1.5, gap: 4 }} justify="center">
+                        <Text size="1" color="gray">{activeSport === 'Soccer' ? 'BTTS' : ''}</Text>
+                    </Flex>
                 </Flex>
 
                 {/* SCROLLABLE ODDS LIST */}
@@ -157,14 +176,14 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
                                     </Flex>
                                 </Box>
 
-                                {/* ODDS: 1x2 */}
+                                {/* ODDS: 1x2 or WINNER */}
                                 <Flex style={{ flex: 2, gap: 8 }}>
                                     {match.markets.h2h.map((odd) => (
                                         <OddsBtn key={odd.label} {...odd} match={match} market="Match Winner" />
                                     ))}
                                 </Flex>
 
-                                {/* ODDS: O/U */}
+                                {/* ODDS: O/U - Render empty if empty array */}
                                 <Flex style={{ flex: 1.5, gap: 8, paddingLeft: 16 }}>
                                     {match.markets.overUnder25?.map((odd) => (
                                         <OddsBtn key={odd.label} {...odd} match={match} market="Over/Under 2.5" />
@@ -182,8 +201,15 @@ export const SportsInterface = ({ onBack }: { onBack: () => void }) => {
                         ))}
 
                         {loading && (
+                            <Flex justify="center" align="center" direction="column" style={{ padding: 40, gap: 20 }}>
+                                <div style={{ width: 30, height: 30, borderRadius: '50%', border: '3px solid #333', borderTopColor: '#00f3ff', animation: 'spin 1s linear infinite' }}></div>
+                                <Text color="gray">Loading live markets...</Text>
+                                <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                            </Flex>
+                        )}
+                        {!loading && matches.length === 0 && (
                             <Flex justify="center" style={{ padding: 40 }}>
-                                <Text color="gray">Loading markets...</Text>
+                                <Text color="gray">No live matches available for {activeSport}.</Text>
                             </Flex>
                         )}
                     </Flex>

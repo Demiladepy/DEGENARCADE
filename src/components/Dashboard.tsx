@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MyBets } from "./MyBets";
 import { ReferralDashboard } from "./ReferralDashboard";
 import { Leaderboard } from "./Leaderboard";
+import { MarketTerminal } from "./Terminal/MarketTerminal";
 
 interface GameCardProps {
     title: string;
@@ -90,13 +91,10 @@ export const Dashboard = ({ setMode }: { setMode: (m: string) => void }) => {
         switch (activeTab) {
             case 'My Bets':
                 return <MyBets />;
-            case 'Friends':
-                return <Text size="5" style={{ color: 'gray' }}>Your friends list is loading...</Text>;
-            case 'Leaderboard':
-                return <Text size="5" style={{ color: 'gray' }}>Leaderboard (Updates Weekly)</Text>;
-            case 'Friends':
-            case 'Team Chat': // Merged functionality as requested
+            case 'Team Chat':
                 return <ReferralDashboard />;
+            case 'Terminal':
+                return <MarketTerminal />;
             case 'Leaderboard':
                 return <Leaderboard />;
             default: // Home
@@ -243,7 +241,7 @@ export const Dashboard = ({ setMode }: { setMode: (m: string) => void }) => {
                 </motion.div>
 
                 <Flex direction="column" gap="2">
-                    {['Home', 'My Bets', 'Leaderboard', 'Team Chat', 'Friends'].map(item => (
+                    {['Home', 'My Bets', 'Leaderboard', 'Team Chat', 'Terminal'].map(item => (
                         <motion.div
                             key={item}
                             whileHover={{ x: 5, color: '#white' }}

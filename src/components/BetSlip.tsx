@@ -1,7 +1,9 @@
 
 import { Box, Flex, Text, Button, TextField, Badge } from "@radix-ui/themes";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
+
+
 
 export interface BetSelection {
     id: string;
@@ -125,7 +127,7 @@ export const BetSlip = ({ selections, onRemove, onPlaceBet }: BetSlipProps) => {
                     <Text size="1" color="gray" style={{ marginBottom: 8, display: 'block' }}>STAKE (SUI)</Text>
                     <TextField.Root
                         value={stake}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setStake(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) => setStake(e.target.value)}
                         style={{ textAlign: 'right', fontWeight: 'bold' }}
                     >
                         <TextField.Slot>

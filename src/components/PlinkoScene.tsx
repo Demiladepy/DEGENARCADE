@@ -1,5 +1,7 @@
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, ChangeEvent } from 'react';
+
+
 import Matter from 'matter-js';
 // import { useCurrentAccount, useSignAndExecuteTransaction } from '@mysten/dapp-kit';
 import { Flex, Text, Button, TextField } from '@radix-ui/themes';
@@ -148,7 +150,7 @@ const PlinkoScene = ({ onBack }: { onBack: () => void }) => {
             <Flex gap="4" align="center" style={{ marginTop: 20, zIndex: 10 }}>
                 <Flex direction="column">
                     <Text size="2" color="gray">Bet Amount (SUI)</Text>
-                    <TextField.Root value={betAmount} onChange={e => setBetAmount(e.target.value)} />
+                    <TextField.Root value={betAmount} onChange={(e: ChangeEvent<HTMLInputElement>) => setBetAmount(e.target.value)} />
                 </Flex>
                 <Button size="4" color="crimson" onClick={dropBall} style={{ padding: '0 40px', cursor: 'pointer' }}>
                     DROP BALL
